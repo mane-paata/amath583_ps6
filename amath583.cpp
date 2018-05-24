@@ -12,9 +12,19 @@
 #include <random>
 #include <functional>
 #include "amath583.hpp"
+#include "omp.h"
 
 double ompTwoNorm(const Vector& x) {
-  /* write me */ return 0;
+  double norm = 0.0, sum = 0.0;
+  int nthread = 4;
+  #pragma omp parallel for num_threads(nthread) reduction(+:norm) shared(x)
+  {
+    for(size_t i = 0; i < x.num_rows(); ++i){
+      sum += x(i)*x(i);
+    }
+  }
+  norm = std::sqrt(sum);
+  return norm;
 }
 
 void ompMatvec(const COOMatrix& A, const Vector& x, Vector& y) { /* write me */ }
