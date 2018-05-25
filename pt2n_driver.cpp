@@ -14,23 +14,33 @@ int main(int argc, char* argv[]){
 
 		size_t dim = atoi(argv[1]);
 		size_t times = atoi(argv[2]);
+
+		double seq_time, par_time;
 		
-		Vector x(dim);
+		Vector x(dim); 
 		double pnorm = 0.0, snorm = 0.0;
 		randomize(x);
-		Timer t1, t2;
-		/////////// parallelized norm //////////
-		t1.start();
-		for(int i = 0; i < times; ++i)
-			pnorm = ompTwoNorm(x);
-		t1.stop();
-		/////////// sequential norm /////////////
-		t2.start();
+		Timer t;
+
+		/* sequential norm */
+		t.start();
 		for(int j = 0; j < times; ++j)
 			snorm = twoNorm(x);
-		t2.stop();
-		////////// output ////////////////////////
-		std::cout << dim << "\t" << t2.elapsed()/times << "\t" << t1.elapsed()/times << "\t" << t2.elapsed()-t1.elapsed() << "\t" << snorm << "\t" << pnorm << std::setprecision(15) << std ::endl;
+		t.stop();
+		seq_time = t.elapsed()/times;
+
+		/* parallelized norm*/
+		t.start();
+		for(int i = 0; i < times; ++i)
+			pnorm = ompTwoNorm(x);
+		t.stop();
+		par_time = t.elapsed()/times;
+
+		double speed_up = seq_time/par_time;
+		double diff_norm = snorm - pnorm;
+		
+		/* output */
+		std::cout << std::setprecision(15) << dim << "\t" << seq_time << "\t" << par_time << "\t" << speed_up << "\t" << diff_norm << std ::endl;
 
 	}
 	return 0;

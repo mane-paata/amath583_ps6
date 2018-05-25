@@ -27,8 +27,8 @@ double ompTwoNorm(const Vector& x) {
   return norm;
 }
 
-void ompMatvec(const COOMatrix& A, const Vector& x, Vector& y) { /* write me */ }
-void ompMatvec(const CSRMatrix& A, const Vector& x, Vector& y) { /* write me */ }
+//void ompMatvec(const COOMatrix& A, const Vector& x, Vector& y) { A.ompMatvec(x,y) }
+//void ompMatvec(const CSRMatrix& A, const Vector& x, Vector& y) { A.ompMatvec(x,y) }
 
 void matvec(const COOMatrix& A, const Vector& x, Vector& y) { A.matvec(x, y); }
 void matvec(const CSRMatrix& A, const Vector& x, Vector& y) { A.matvec(x, y); }

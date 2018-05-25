@@ -56,6 +56,12 @@ public:
       y(row_indices_[k]) += storage_[k] * x(col_indices_[k]);
     }
   }
+  /* omP Matvec */
+  /*void ompMatvec(const Vector& x, Vector& y) const {
+    for (size_type k = 0; k < arrayData.size(); ++k) {
+      y(rowIndices[k]) += arrayData[k] * x(rowIndices[k]); 
+      } 
+    }*/ 
 
   void streamMatrix(std::ostream& outputFile) const {
     assert(storage_.size() == row_indices_.size() && storage_.size() == col_indices_.size());
