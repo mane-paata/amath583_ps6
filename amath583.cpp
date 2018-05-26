@@ -17,14 +17,16 @@
 
 double ompTwoNorm(const Vector& x) {
   double norm = 0.0, sum = 0.0;
-  int nthread = 4;
-  #pragma omp parallel for num_threads(nthread) reduction(+:norm) shared(x)
+	size_t i;
+	size_t num_threads = omp_get_max_threads();
+	size_t schedule_length = x.num_rows() / num_threads;
+  #pragma omp parallel for num_threads(num_threads) schedule(dynamic, schedule_length) default(none) reduction(+:sum) private(i) shared(x)
   {
-    for(size_t i = 0; i < x.num_rows(); ++i){
+    for( i = 0; i < x.num_rows(); ++i){
       sum += x(i)*x(i);
     }
   }
-  norm = std::sqrt(sum);
+  norm = sqrt(sum);
   return norm;
 }
 
@@ -133,7 +135,7 @@ void piscetize(CSRMatrix& A, size_t xpoints, size_t ypoints) {
 */
 void driver_helper(size_t user_dim, bool isCSR)
 {
-  size_t times = user_dim >= 100 ? 100 : 10000;
+
   unsigned long dim = user_dim * user_dim;
   double seq_time, par_time, seq_norm, par_norm;
   size_t num_cores = std::thread::hardware_concurrency();
@@ -145,18 +147,19 @@ void driver_helper(size_t user_dim, bool isCSR)
   Vector x(dim), y_seq(dim), y_par(dim);
   randomize(x);
 
+	size_t times_seq = 100000 / user_dim < 100 ? 100 : 10000 / user_dim  ;
+	size_t times_omp = times_seq * 4;
+
   if (isCSR){
     //std::cout << "Running CSR\n";
     CSRMatrix A(dim, dim);
     piscetize(A, user_dim, user_dim);
 
-    /* Sequential norm */
-    seq_time = timed_matvec(A, x, y_seq, times, false);
-    seq_norm = twoNorm(y_seq);
-
-    /* Parallel norm */
-    par_time = timed_matvec(A, x, y_par, times, true);
-    par_norm = twoNorm(y_par);
+    /* Sequential */
+    seq_time = timed_matvec(A, x, y_seq, times_seq, false);
+    
+    /* Parallel */
+    par_time = timed_matvec(A, x, y_par, times_omp, true);
   }
   else
   {
@@ -164,19 +167,22 @@ void driver_helper(size_t user_dim, bool isCSR)
     COOMatrix A(dim, dim);
     piscetize(A, user_dim, user_dim);
 
-    /* Sequential norm */
-    seq_time = timed_matvec(A, x, y_seq, times, false);
-    seq_norm = twoNorm(y_seq);
+    /* Sequential */
+    seq_time = timed_matvec(A, x, y_seq, times_seq, false);
 
-    /* Parallel norm */
-    par_time = timed_matvec(A, x, y_par, times, true);
-    par_norm = twoNorm(y_par);
+    /* Parallel */
+    par_time = timed_matvec(A, x, y_par, times_omp, true);
   }
 
+	seq_norm = twoNorm(y_seq);
+	par_norm = ompTwoNorm(y_par);	
+
   /* output */
-  double speed_up = seq_time / par_time;
-  double norm_diff = seq_norm - par_norm;
+	double speed_up = 0;
+	if (par_time > 0) speed_up = seq_time / par_time;
+  double norm_diff = std::abs(seq_norm - par_norm);
   
   std::cout << std::setprecision(15) << num_cores << "\t" << thread_count << "\t" << dim << "\t";
-  std::cout << seq_time << "\t" << par_time << "\t" << speed_up << "\t" << norm_diff  << std ::endl;
+  std::cout << seq_time << "\t" << par_time << "\t" << speed_up << "\t" << norm_diff   << std ::endl;
+	//std::cout << std::setprecision(30) << seq_norm << "\t" << par_norm << std::endl;
 }

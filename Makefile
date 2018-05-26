@@ -10,7 +10,7 @@
 
 CXX             = c++
 
-OPTS            = -O3 -DNDEBUG # Also try -Ofast -march=native
+OPTS            = -march=native -DNDEBUG # Also try -Ofast -march=native
 LANG            = -std=c++11 -fopenmp
 PICKY           = -Wall 
 
