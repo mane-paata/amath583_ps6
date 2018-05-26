@@ -29,35 +29,25 @@ void piscetize(CSRMatrix& A, size_t xpoints, size_t ypoints);
 
 void zeroize(Vector& x);
 
-/*  Templatized timed sequential matvec (COO and CSR) */
+/*  
+ * Templatized timed matvec (COO and CSR) 
+ * times : Number of times to run
+ * isOMP : if set to true will run the parallel version, otherwise sequential
+*/
 template <typename MatrixType>
-double seq_matvec(const MatrixType& A, const Vector& x, Vector& y, size_t times){
+double timed_matvec(const MatrixType& A, const Vector& x, Vector& y, size_t times, bool isOMP ){
 	double time_elapsed = 0.0;
 	Timer t;
 	for(int j = 0; j < times; ++j){
 		zeroize(y);
-		t.start();
-		matvec(A, x, y);
+		if (isOMP) { t.start(); ompMatvec(A, x, y); }
+		else       { t.start(); matvec(A, x, y); }
 		t.stop();
 		time_elapsed += t.elapsed();
 	}
 	return time_elapsed/times;
 }
 
-
-/*  Templatized timed parallel ompMatvec (COO and CSR) */
-template <typename MatrixType>
-double omp_matvec(const MatrixType& A, const Vector& x, Vector& y, size_t times){
-	double time_elapsed = 0.0;
-	Timer t;
-	for(int j = 0; j < times; ++j){
-		zeroize(y);
-		t.start();
-		ompMatvec(A, x, y);
-		t.stop();
-		time_elapsed += t.elapsed();
-	}
-	return time_elapsed/times;
-}
+void driver_helper(size_t user_dim, bool isCSR);
 
 #endif // __AMATH583_HPP

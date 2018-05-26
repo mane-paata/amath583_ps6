@@ -16,6 +16,7 @@
 #include <iomanip>
 #include <iostream>
 #include <vector>
+#include "omp.h"
 
 #include "Vector.hpp"
 
@@ -56,12 +57,15 @@ public:
       y(row_indices_[k]) += storage_[k] * x(col_indices_[k]);
     }
   }
+  
   /* omP Matvec */
-  /*void ompMatvec(const Vector& x, Vector& y) const {
-    for (size_type k = 0; k < arrayData.size(); ++k) {
-      y(rowIndices[k]) += arrayData[k] * x(rowIndices[k]); 
-      } 
-    }*/ 
+  void ompMatvec(const Vector& x, Vector& y) const {
+    size_t k;
+    #pragma omp parallel for num_threads(omp_get_max_threads()) default(none) private(k) shared(x, y)
+    for (k = 0; k < storage_.size(); ++k) {
+      y(row_indices_[k]) += storage_[k] * x(col_indices_[k]);
+    }
+  }
 
   void streamMatrix(std::ostream& outputFile) const {
     assert(storage_.size() == row_indices_.size() && storage_.size() == col_indices_.size());

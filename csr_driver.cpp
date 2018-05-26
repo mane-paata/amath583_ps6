@@ -10,6 +10,6 @@ int main(int argc, char* argv[]){
 		return -1;
 	}
 	size_t user_dim = atoi(argv[1]);
-	driver_helper(user_dim, false);
+	driver_helper(user_dim, true);
 	return 0;
 }

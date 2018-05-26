@@ -1,0 +1,8 @@
+{
+  "terminal.integrated.shell.osx": "/usr/local/bin/docker",
+  "terminal.integrated.shellArgs.osx": [
+    "run", "-it", "--rm",
+    "-v", "/Users/ajagannath/Workspace:/home/amath583/Workspace",
+    "amath583/openmp"
+  ]
+}
