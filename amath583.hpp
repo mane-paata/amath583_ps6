@@ -36,16 +36,16 @@ void zeroize(Vector& x);
 */
 template <typename MatrixType>
 double timed_matvec(const MatrixType& A, const Vector& x, Vector& y, size_t times, bool isOMP ){
-	double time_elapsed = 0.0;
-	Timer t;
-	for(int j = 0; j < times; ++j){
-		zeroize(y);
-		if (isOMP) { t.start(); ompMatvec(A, x, y); }
-		else       { t.start(); matvec(A, x, y); }
-		t.stop();
-		time_elapsed += t.elapsed();
-	}
-	return time_elapsed/times;
+  double time_elapsed = 0.0;
+  Timer t;
+  for(int j = 0; j < times; ++j){
+    zeroize(y);
+    if (isOMP) { t.start(); ompMatvec(A, x, y); }
+    else       { t.start(); matvec(A, x, y); }
+    t.stop();
+    time_elapsed += t.elapsed();
+  }
+  return time_elapsed/times;
 }
 
 void driver_helper(size_t user_dim, bool isCSR);

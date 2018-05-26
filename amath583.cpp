@@ -134,16 +134,16 @@ void piscetize(CSRMatrix& A, size_t xpoints, size_t ypoints) {
 void driver_helper(size_t user_dim, bool isCSR)
 {
   size_t times = user_dim >= 100 ? 100 : 10000;
-	unsigned long dim = user_dim * user_dim;
-	double seq_time, par_time, seq_norm, par_norm;
+  unsigned long dim = user_dim * user_dim;
+  double seq_time, par_time, seq_norm, par_norm;
   size_t num_cores = std::thread::hardware_concurrency();
-	size_t thread_count = 0;
+  size_t thread_count = 0;
   
   #pragma omp parallel reduction(+:thread_count)
   thread_count += 1;
 
-	Vector x(dim), y_seq(dim), y_par(dim);
-	randomize(x);
+  Vector x(dim), y_seq(dim), y_par(dim);
+  randomize(x);
 
   if (isCSR){
     //std::cout << "Running CSR\n";
@@ -173,10 +173,10 @@ void driver_helper(size_t user_dim, bool isCSR)
     par_norm = twoNorm(y_par);
   }
 
-	/* output */
-	double speed_up = seq_time / par_time;
-	double norm_diff = seq_norm - par_norm;
-	
+  /* output */
+  double speed_up = seq_time / par_time;
+  double norm_diff = seq_norm - par_norm;
+  
   std::cout << std::setprecision(15) << num_cores << "\t" << thread_count << "\t" << dim << "\t";
   std::cout << seq_time << "\t" << par_time << "\t" << speed_up << "\t" << norm_diff  << std ::endl;
 }
