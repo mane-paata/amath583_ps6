@@ -52,6 +52,16 @@ public:
     }
   }
 
+  void ompMatvec(const Vector& x, Vector& y) const {
+    size_t i, j;
+    #pragma omp parallel for num_threads(omp_get_max_threads()) default(none) private(i, j) shared(x, y)
+    for (i = 0; i < num_rows_; ++i) {
+      for (j = row_indices_[i]; j < row_indices_[i + 1]; ++j) {
+        y(i) += storage_[j] * x(col_indices_[j]);
+      }
+    }
+  }
+
   void clear() {
     col_indices_.clear();
     storage_.clear();
