@@ -4,5 +4,8 @@
     "run", "-it", "--rm",
     "-v", "/Users/ajagannath/Workspace:/home/amath583/Workspace",
     "amath583/openmp"
-  ]
+  ],
+  "editor.tabSize": 2,
+  "editor.detectIndentation": false,
+  "editor.insertSpaces": true
 }
