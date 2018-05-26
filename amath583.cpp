@@ -140,7 +140,7 @@ void driver_helper(size_t user_dim, bool isCSR)
 	size_t thread_count = 0;
   
   #pragma omp parallel reduction(+:thread_count)
-    thread_count += 1;
+  thread_count += 1;
 
 	Vector x(dim), y_seq(dim), y_par(dim);
 	randomize(x);
