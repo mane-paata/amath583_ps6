@@ -61,8 +61,8 @@ public:
   /* omP Matvec */
   void ompMatvec(const Vector& x, Vector& y) const {
     size_t k;
-		size_t num_threads = omp_get_max_threads();
-	  size_t schedule_length = x.num_rows() / num_threads;
+    size_t num_threads = omp_get_max_threads();
+    size_t schedule_length = x.num_rows() / num_threads;
     #pragma omp parallel for num_threads(num_threads) schedule(dynamic, schedule_length) default(none) private(k) shared(x, y)
     for (k = 0; k < storage_.size(); ++k) {
       y(row_indices_[k]) += storage_[k] * x(col_indices_[k]);

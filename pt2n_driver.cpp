@@ -24,23 +24,23 @@ int main(int argc, char* argv[]){
 
     /* sequential norm */
     for(int j = 0; j < times; ++j)
-		{
-		  t.start();
+    {
+      t.start();
       snorm = twoNorm(x);
       t.stop();
       seq_time += t.elapsed();
-		}
-		seq_time = seq_time / times;
+    }
+    seq_time = seq_time / times;
 
     /* parallelized norm*/
     for(int j = 0; j < times; ++j)
-		{
-		  t.start();
+    {
+      t.start();
       pnorm = ompTwoNorm(x);
       t.stop();
       par_time += t.elapsed();
-		}
-		par_time = par_time / times;
+    }
+    par_time = par_time / times;
 
     double speed_up = seq_time/par_time;
     double diff_norm = std::abs(snorm - pnorm);

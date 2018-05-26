@@ -17,9 +17,9 @@
 
 double ompTwoNorm(const Vector& x) {
   double norm = 0.0, sum = 0.0;
-	size_t i;
-	size_t num_threads = omp_get_max_threads();
-	size_t schedule_length = x.num_rows() / num_threads;
+  size_t i;
+  size_t num_threads = omp_get_max_threads();
+  size_t schedule_length = x.num_rows() / num_threads;
   #pragma omp parallel for num_threads(num_threads) schedule(dynamic, schedule_length) default(none) reduction(+:sum) private(i) shared(x)
   {
     for( i = 0; i < x.num_rows(); ++i){
@@ -147,8 +147,8 @@ void driver_helper(size_t user_dim, bool isCSR)
   Vector x(dim), y_seq(dim), y_par(dim);
   randomize(x);
 
-	size_t times_seq = 100000 / user_dim < 100 ? 100 : 10000 / user_dim  ;
-	size_t times_omp = times_seq * 4;
+  size_t times_seq = 100000 / user_dim < 100 ? 100 : 10000 / user_dim  ;
+  size_t times_omp = times_seq * 4;
 
   if (isCSR){
     //std::cout << "Running CSR\n";
@@ -174,15 +174,15 @@ void driver_helper(size_t user_dim, bool isCSR)
     par_time = timed_matvec(A, x, y_par, times_omp, true);
   }
 
-	seq_norm = twoNorm(y_seq);
-	par_norm = ompTwoNorm(y_par);	
+  seq_norm = twoNorm(y_seq);
+  par_norm = ompTwoNorm(y_par);  
 
   /* output */
-	double speed_up = 0;
-	if (par_time > 0) speed_up = seq_time / par_time;
+  double speed_up = 0;
+  if (par_time > 0) speed_up = seq_time / par_time;
   double norm_diff = std::abs(seq_norm - par_norm);
   
   std::cout << std::setprecision(15) << num_cores << "\t" << thread_count << "\t" << dim << "\t";
   std::cout << seq_time << "\t" << par_time << "\t" << speed_up << "\t" << norm_diff   << std ::endl;
-	//std::cout << std::setprecision(30) << seq_norm << "\t" << par_norm << std::endl;
+  //std::cout << std::setprecision(30) << seq_norm << "\t" << par_norm << std::endl;
 }
